@@ -69,8 +69,8 @@ y = iris_df['petal length (cm)']
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111) # train 80%
 
 # LESS CONFUSING WAY
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.2, random_state=111)
-#X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=111)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.2, random_state=111)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=111)
 
 lr = LinearRegression()
 
@@ -121,14 +121,13 @@ print('Mean Squared Error (MSE): ', mean_squared_error(y_test, y_pred))
 # RMSE went up 0.29 --> 0.45 when test was 90%
 # THIS IS CALCULATING WITHIN .45 CM OF ERROR
 # Just trained the model on 10% of the data, so it's not very accurate
-# Lower you train, the faster it is to train
+# Lower samples used to train model, the faster it is to train
 
 # MOVING ON TO PREDICTION
 
 # Predicting a new data point
-print("Acutal data 16th position")
-print(iris_df.loc[16])
-
+actual_df = iris_df.loc[16]
+print('Actual Petal Length (cm): ', actual_df['petal length (cm)'])
 
 # Create a new dataframe
 d = {
@@ -146,7 +145,6 @@ pred_df = pd.DataFrame(data=d)
 
 # Predict the new data point using LR
 pred = lr.predict(X_test)
-print(pred)
+#print(pred)
 print('Predicted Petal Length (cm): ', pred[0])
-print('Actual Petal Length (cm): ', 1.3)
 
