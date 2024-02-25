@@ -33,7 +33,7 @@ iris_df = pd.concat([iris_df, target_df], axis = 1)
 # Iris data statistics
 # Trying to use linear regression to predict any of
 # the properties of the iris
-print(iris_df.describe())
+#print(iris_df.describe())
 
 #        sepal length (cm)  sepal width (cm)  petal length (cm)  petal width (cm)
 # count         150.000000        150.000000         150.000000        150.000000
@@ -58,14 +58,19 @@ target_df = pd.DataFrame(columns=['species'], data = iris.target)
 iris_df = pd.concat([iris_df, target_df], axis = 1)
 
 # Variables (Dropping sepal length to show we can predict it)
-X = iris_df.drop(labels='sepal length (cm)', axis=1)
-y = iris_df['sepal length (cm)']
+X = iris_df.drop(labels='petal length (cm)', axis=1)
+y = iris_df['petal length (cm)']
 
 # Splitting the Dataset
 # In the real world, we test only a small sample
 # Use minimum amount of samples to pridict vast majority
 # 10% train, 90% test. 20% train, 80% test. 50% train, 50% test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.9, random_state=111)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.8, random_state=111) # train 20%
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111) # train 80%
+
+# LESS CONFUSING WAY
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.2, random_state=111)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=111)
 
 lr = LinearRegression()
 
@@ -92,7 +97,7 @@ print('Root Mean Squared Error (RMSE): ', np.sqrt(mean_squared_error(y_test, y_p
 print('Mean Squared Error (MSE): ', mean_squared_error(y_test, y_pred))
 
 # LR beta/slope coefficient:  [ 0.61207486  0.78013546 -0.35124986 -0.34942695]
-# The 4 values are because there are 4 different X's
+# The 4 values are because there are 4 different attributes
 
 # LR alpha/slope intercept coefficient:  1.8102535296995388
 # This is the prediction for sepal length, when everything is 0.
@@ -121,7 +126,9 @@ print('Mean Squared Error (MSE): ', mean_squared_error(y_test, y_pred))
 # MOVING ON TO PREDICTION
 
 # Predicting a new data point
+print("Acutal data 16th position")
 print(iris_df.loc[16])
+
 
 # Create a new dataframe
 d = {
@@ -135,12 +142,12 @@ d = {
 pred_df = pd.DataFrame(data=d)
 
 # Display the Dataframe
-print('Data frame to be predicted: ')
-print(pred_df)
+#print('Data frame to be predicted: ')
+#print(pred_df)
 
 # Predict the new data point using LR
 pred = lr.predict(X_test)
 print(pred)
-print('Predicted Sepal Length (cm): ', pred[0])
-print('Actual Sepal Length (cm): ', 5.4)
+print('Predicted Petal Length (cm): ', pred[0])
+print('Actual Petal Length (cm): ', 1.3)
 
