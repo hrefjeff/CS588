@@ -78,7 +78,6 @@ lr = LinearRegression()
 lr.fit(X_train, y_train)
 
 # LR Prediction
-#lr.predict(X_test)
 y_pred = lr.predict(X_test)
 
 # Quantitative Analysis - evaluate LR performance
@@ -126,25 +125,26 @@ print('Mean Squared Error (MSE): ', mean_squared_error(y_test, y_pred))
 # MOVING ON TO PREDICTION
 
 # Predicting a new data point
-actual_df = iris_df.loc[16]
-print('Actual Petal Length (cm): ', actual_df['petal length (cm)'])
+actual_df = iris_df.loc[125]
 
 # Create a new dataframe
 d = {
-        'sepal length (cm)' : [5.4],
-        'sepal width (cm)' : [3.9],
-        'petal width (cm)' : [0.4],
-        'species' : 0
+        'sepal length (cm)' : [actual_df['sepal length (cm)']],
+        'sepal width (cm)' : [actual_df['sepal width (cm)']],
+        'petal length (cm)' : [actual_df['petal length (cm)']],
+        'petal width (cm)' : [actual_df['petal width (cm)']],
+        'species' : [actual_df['species']]
     }
 
-pred_df = pd.DataFrame(data=d)
+test_df = pd.DataFrame(data=d)
 
-# Display the Dataframe
-#print('Data frame to be predicted: ')
-#print(pred_df)
+print(test_df)
+
+X_test = test_df.drop('petal length (cm)', axis=1)
+y_test = test_df['petal length (cm)']
 
 # Predict the new data point using LR
 pred = lr.predict(X_test)
-#print(pred)
-print('Predicted Petal Length (cm): ', pred[0])
 
+print('Predicted Petal Length (cm): ', pred[0])
+print('Actual Petal Length (cm): ', actual_df['petal length (cm)'])
