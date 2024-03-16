@@ -69,8 +69,8 @@ y = iris_df['petal length (cm)']
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=111) # train 80%
 
 # LESS CONFUSING WAY
-#X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.2, random_state=111)
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=111)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.2, random_state=111)
+#X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=111)
 
 lr = LinearRegression()
 
@@ -125,7 +125,7 @@ print('Mean Squared Error (MSE): ', mean_squared_error(y_test, y_pred))
 # MOVING ON TO PREDICTION
 
 # Predicting a new data point
-actual_df = iris_df.loc[125]
+actual_df = iris_df.loc[16]
 
 # Create a new dataframe
 d = {
