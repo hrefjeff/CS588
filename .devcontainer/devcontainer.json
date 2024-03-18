@@ -1,0 +1,7 @@
+{
+    "name": "school",
+    "image": "docker.io/jeffwayne256/python-base-img:latest",
+    "mounts": [
+        "source=${localEnv:HOME}/code/CS588,target=/workspace,type=bind,consistency=cached"
+    ]
+}
