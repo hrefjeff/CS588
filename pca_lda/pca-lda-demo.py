@@ -1,10 +1,88 @@
 #!/usr/bin/env python3
 
+import numpy as np
+import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 from sklearn import datasets
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+########################### Pt 1. Random Generated Data
+
+plt.style.use('ggplot')
+plt.rcParams['figure.figsize'] = (12, 8)
+
+# Generate normal distribution data with N(0,1)
+x1 = np.random.normal(0, 1, 1000)
+x2 = np.random.normal(0, 1, 1000)
+x3 = np.random.normal(0, 1, 1000)
+X = np.vstack((x1, x2, x3)).T
+
+plt.scatter(X[:, 0], X[:, 1])
+plt.title('Normal Distribution Data N(0,1) - X')
+plt.axis('equal')
+plt.savefig('normal-dist.png')
+
+# clear plot picture
+plt.figure()
+
+# Calculate covariance matrix & create heat map viz
+X_df = pd.DataFrame(X, columns=['1', '2', '3'])
+cov_matrix = np.cov(X_df.T, bias=True)
+print(cov_matrix)
+
+# Visualization
+sns.heatmap(cov_matrix, annot=True)
+plt.savefig('normal-dist-heatmap.png')
+
+# clear plot picture
+plt.figure()
+
+# Find principal components
+pca = PCA(n_components=2)
+PCs = pca.fit_transform(X.T)
+
+# display the PCs (or eigenvectors)
+print('The PCs for data X generate = \n', PCs)
+
+# Display contruition of each pc's
+ev = pca.explained_variance_ratio_
+print('\n The explained variance ration/variance in each PCA \n = ' , (ev*100))
+
+# Plot variance/pc
+plt.bar([1,2], list(ev*100), label='Principal Components', color='b')
+plt.legend()
+plt.xlabel('Principal Components')
+pc = []
+for i in range(2):
+    pc.append('PC'+str(i+1))
+plt.xticks([1,2], pc, fontsize=8, rotation=30)
+plt.ylabel('Variance Ratio')
+plt.title('Variance Ratio of Normal Distributed Data X')
+plt.savefig('varianc-ratio-normal-dist-data.png')
+
+# clear plot picture
+plt.figure()
+
+# PCA transformed data
+Y = np.matmul(X, PCs)
+
+# PCA visualization (plot eig val and eig vectors)
+C = np.cov(Y.T)
+
+eig_vec, eig_val = np.linalg.eig(C)
+print('The eig values computed for x = \n', eig_val)
+print('\nThe eig vectors (PCs) computed for X = \n', eig_vec)
+
+plt.scatter(Y[:,0], Y[:,1])
+for e, v in zip(eig_vec, eig_val.T):
+    plt.plot([0, 5*np.sqrt(e)*v[0]], [0, 5*np.sqrt(e)*v[1]], 'k-', lw=2)
+plt.title('PCA Transformed data-Y=T(X)')
+plt.axis('equal')
+plt.savefig('normal-dist-pcplot.png')
+########################### Pt 2. Iris Data
 
 # Load data
 iris = datasets.load_iris()
