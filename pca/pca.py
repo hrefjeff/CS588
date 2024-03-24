@@ -28,7 +28,7 @@ def main():
     num_bands = np.array(df['num_bands'])
     bands,samples = x.shape
 
-    # load ground truth data
+    # load ground truth data (class labels to the data)
     gth_mat = scipy.io.loadmat(r'indian_gth.mat')
     gth_mat = {i:j for i, j in gth_mat.items() if i[0] != '_'}
     gt = pd.DataFrame({i: pd.Series(j[0]) for i, j in gth_mat.items()})
