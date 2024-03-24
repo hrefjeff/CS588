@@ -24,6 +24,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline
+from sklearn.metrics import plot_confusion_matrix
 
 
 def plot_learning_curve(classifier, X, y, steps=10, train_sizes=np.linspace(0.1, 1.0, 10), label="", color="r", axes=None):
@@ -59,6 +60,18 @@ def plot_learning_curve(classifier, X, y, steps=10, train_sizes=np.linspace(0.1,
     print("Testing Accuracy of ", label, ": ", test_scores[-1], "%")
     print("")
     return plt
+
+def plot_per_class_accuracy(classifier, X, y, label, feature_selection = None):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.9, random_state=101)
+    pipeline = Pipeline([("scalar", MinMaxScaler()), ("classifier", classifier)])
+    pipeline.fit(X_train, y_train)
+    disp = plot_confusion_matrix(pipeline, X_test, y_test, cmap=plt.cm.Blues)
+    plt.title(label)
+    plt.savefig(f'cm-{label}.png')
+    true_positive = disp.confusion_matrix[1][1]
+    false_negative = disp.confusion_matrix[1][0]
+    print(label + " - Sensitivity: ", true_positive/(true_positive+false_negative))
+    print()
 
 def main():
     # Load Iris Data
@@ -132,6 +145,10 @@ def main():
     axes[1].legend()
 
     plt.savefig("comparison.png")
+
+    for label in classifier_labels:
+        classifier = classifier_labels[label][0]
+        plot_per_class_accuracy(classifier, X, y, label)
 
 if __name__ == '__main__':
     main()
