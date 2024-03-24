@@ -98,25 +98,54 @@ plt.title('Variance Ratio of INDIAN PINES Dataset')
 plt.savefig('explained-variance-indianpines.png')
 
 # part ii
-pca = PCA(n_components=2)
-PCs = pca.fit_transform(X.T)
 
-# PCA transformed data
-Y = np.matmul(X, PCs)
+## Iris reduction
+# Only 2 features out of 4 being retained
+iris_reduced_pca = PCA(n_components=2)
+X_r = iris_reduced_pca.fit(X).transform(X)
 
-# PCA visualization (plot eig val and eig vectors)
-C = np.cov(Y.T)
+# Visualization time
+plt.figure()
+colors = ['navy', 'turquoise', 'darkorange']
+lw = 2
 
-eig_vec, eig_val = np.linalg.eig(C)
-print('The eig values computed for x = \n', eig_val)
-print('\nThe eig vectors (PCs) computed for X = \n', eig_vec)
+for color, i, target_name in zip(colors, [0,1,2], target_names):
+    plt.scatter(X_r[y == i, 0], X_r[y == i, 1], color=color, alpha=0.8, lw=lw, label=target_name)
+plt.legend(loc='best', shadow=False, scatterpoints=1)
+plt.title('PCA of IRIS dataset (2 Dimensions)')
+plt.savefig('pca-iris.png')
 
-plt.scatter(Y[:,0], Y[:,1])
-for e, v in zip(eig_vec, eig_val.T):
-    plt.plot([0, 5*np.sqrt(e)*v[0]], [0, 5*np.sqrt(e)*v[1]], 'k-', lw=2)
-plt.title('PCA Transformed data-Y=T(X)')
-plt.axis('equal')
-plt.savefig('iris-pcplot.png')
+## Indian Pines reduction
+
+# Dimensionality reduction using PCA
+x1 = x.transpose()
+indianpines_reduced_pca = np.matmul(x1, indianpines_PCs)
+
+# Model x as a dataframe
+x_pca_df = pd.DataFrame(data = indianpines_reduced_pca,
+                        columns = ['PC-1', 'PC-2', 'PC-3', 'PC-4', 'PC-5', 'PC-6', 'PC-7', 'PC-8', 'PC-9', 'PC-10'])
+
+# Adding labels
+X_pca_df = pd.concat([x_pca_df, gt], axis = 1)
+
+fig = plt.figure(figsize = (10,10))
+ax = fig.add_subplot(1,1,1)
+ax.set_xlabel('PC-1', fontsize = 15)
+ax.set_ylabel('PC-2', fontsize = 15)
+ax.set_title('PCA on Indian Pines Dataset', fontsize = 20)
+class_num = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+colors = ['r','g','b','y','m','c','k','r','g','b','y','m','c','k','b','r']
+markerm = ['o','o','o','o','o','o','o','+','+','+','+','+','+','+','*','*']
+for target, color, m in zip(class_num,colors,markerm):
+    indicesToKeep = X_pca_df['gth'] == target
+    ax.scatter(X_pca_df.loc[indicesToKeep, 'PC-1'],
+                X_pca_df.loc[indicesToKeep, 'PC-2'],
+                c = color, marker = m, s = 9)
+ax.legend(class_num)
+ax.grid()
+plt.savefig('pca-indianpines.png')
+
+exit()
 
 # Part iii
 
