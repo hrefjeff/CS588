@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 
-import matplotlib.pyplot as plt
 import numpy as np
+import scipy.io
+import pandas as pd
 
-from sklearn import datasets
 from matplotlib import pyplot
-
+import matplotlib.pyplot as plt
 
 from sklearn.datasets import load_iris
-
+from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import learning_curve
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import StratifiedKFold
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
@@ -25,7 +27,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline
-
+from sklearn.metrics import plot_confusion_matrix
 
 def plot_learning_curve(classifier, X, y, steps=10, train_sizes=np.linspace(0.1, 1.0, 10), label="", color="r", axes=None):
     estimator = Pipeline([("scaler", MinMaxScaler()), ("classifier", classifier)])
@@ -61,6 +63,18 @@ def plot_learning_curve(classifier, X, y, steps=10, train_sizes=np.linspace(0.1,
     print("")
     return plt
 
+def plot_per_class_accuracy(classifier, X, y, label, feature_selection = None):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.9, random_state=101)
+    pipeline = Pipeline([("scalar", MinMaxScaler()), ("classifier", classifier)])
+    pipeline.fit(X_train, y_train)
+    disp = plot_confusion_matrix(pipeline, X_test, y_test, cmap=plt.cm.Blues)
+    plt.title(label)
+    plt.savefig(f'cm-{label}.png')
+    true_positive = disp.confusion_matrix[1][1]
+    false_negative = disp.confusion_matrix[1][0]
+    print(label + " - Sensitivity: ", true_positive/(true_positive+false_negative))
+    print()
+
 def main():
     # Load Iris Data
     iris = load_iris()
@@ -68,6 +82,31 @@ def main():
     X = iris.data
     y = iris.target
     target_names = iris.target_names
+
+    iris_pca = PCA(n_components=2)
+    iris_PCs = iris_pca.fit_transform(X.T)
+
+    ## Indian Pines
+    df = scipy.io.loadmat(r'indianR.mat')
+    print(df.keys())
+    print(df['num_bands'])
+
+    x = np.array(df['X']) # data
+    gth = np.array(df['gth']) # labels
+    num_rows = np.array(df['num_rows'])
+    num_cols = np.array(df['num_cols'])
+    num_bands = np.array(df['num_bands'])
+    bands,samples = x.shape
+
+    ### load ground truth data (class labels to the data)
+    gth_mat = scipy.io.loadmat(r'indian_gth.mat')
+    gth_mat = {i:j for i, j in gth_mat.items() if i[0] != '_'}
+    gt = pd.DataFrame({i: pd.Series(j[0]) for i, j in gth_mat.items()})
+
+    ### Preprocessing of indian pines data set
+    scaler_model = MinMaxScaler()
+    scaler_model.fit(x.astype(float))
+    x = scaler_model.transform(x)
 
     # Splitting the Dataset
     # In the real world, we test only a small sample
@@ -105,24 +144,26 @@ def main():
     pyplot.title('Algorithm Comparison')
     pyplot.savefig('algo-comparison.png')
 
+    plt.figure()
     _, axes = plt.subplots(1, 2, figsize=(12, 5))
 
     num_steps = 10
     classifier_labels = {
+        "SVM - RBF": (SVC(kernel="rbf", random_state=1), "orange"),
+        "Guassian Naive Bayes": (GaussianNB(), "lime"),
+        "MLP": (MLPClassifier(hidden_layer_sizes=(64, 32),max_iter=1000, random_state=42), "blue"),
         #"Logistic Regression": (LogisticRegression(max_iter=1000, random_state=1), "red"),
         #"Random Forest": (RandomForestClassifier(random_state=1), "green"),
         #"SVM - Linear": (SVC(kernel="linear", random_state=1), "blue"),
-        "SVM - RBF": (SVC(kernel="rbf", random_state=1), "orange"),
         #"SVM - Poly": (SVC(kernel="poly", random_state=1), "orange"),
         #"kNN": (KNeighborsClassifier(n_neighbors=5), "purple"),
-        "Guassian Naive Bayes": (GaussianNB(), "lime"),
-        "MLP": (MLPClassifier(hidden_layer_sizes=(64, 32),max_iter=1000, random_state=42), "blue"),
     }
 
     for label in classifier_labels:
         classifier = classifier_labels[label][0]
         color = classifier_labels[label][1]
         plot_learning_curve(classifier, X, y, steps=num_steps, label=label, color=color, axes=axes)
+
 
     axes[0].set_xlabel('% of Training Exmples')
     axes[0].set_ylabel('Overall Classification Accuracy')
@@ -135,6 +176,13 @@ def main():
     axes[1].legend()
 
     plt.savefig("comparison.png")
+
+    plt.figure() # clear buffer
+
+    for label in classifier_labels:
+        classifier = classifier_labels[label][0]
+        color = classifier_labels[label][1]
+        plot_per_class_accuracy(classifier, X, y, label)
 
 if __name__ == '__main__':
     main()

@@ -51,7 +51,7 @@ def main():
     x = scaler_model.transform(x)
 
     # Finding the principle components
-    pca = PCA(n_components=10)
+    pca = PCA(n_components=2)
     principalComponents = pca.fit_transform(x)
 
     # Display contribution of each pc's
@@ -67,10 +67,10 @@ def main():
 
     # Select the number of components to retain
     # -----------------------------------------
-    pca = PCA(n_components=10)
+    pca = PCA(n_components=2)
     principalComponents = pca.fit_transform(x)
     principalDf = pd.DataFrame(data = principalComponents,
-                               columns = ['PC-1', 'PC-2', 'PC-3', 'PC-4', 'PC-5', 'PC-6', 'PC-7', 'PC-8', 'PC-9', 'PC-10'])
+                               columns = ['PC-1', 'PC-2'])
 
     # Adding labels
     finalDf = pd.concat([principalDf, gt], axis = 1)
@@ -83,7 +83,7 @@ def main():
 
     # Model x as a dataframe
     x_pca_df = pd.DataFrame(data = X_pca,
-                            columns = ['PC-1', 'PC-2', 'PC-3', 'PC-4', 'PC-5', 'PC-6', 'PC-7', 'PC-8', 'PC-9', 'PC-10'])
+                            columns = ['PC-1', 'PC-2'])
 
     # Adding labels
     X_pca_df = pd.concat([x_pca_df, gt], axis = 1)
@@ -93,13 +93,13 @@ def main():
 
     # ADDING SOME VISUALIZATION
     # Bar graph for explained variance ratio
-    plt.bar([1,2,3,4,5,6,7,8,9,10], list(ev*100), label='Principal Components', color='b')
+    plt.bar([1,2], list(ev*100), label='Principal Components', color='b')
     plt.legend()
     plt.xlabel('Principal Components')
     pc=[]
-    for i in range(10):
+    for i in range(2):
         pc.append('PC'+str(i+1))
-    plt.xticks([1,2,3,4,5,6,7,8,9,10],pc,fontsize=8,rotation=30)
+    plt.xticks([1,2],pc,fontsize=8,rotation=30)
     plt.ylabel('Variance Ratio')
     plt.title('Variance Ratio of INDIAN PINES Dataset')
     plt.savefig('indianpines-variance-ratio.png')

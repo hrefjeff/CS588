@@ -122,11 +122,11 @@ x1 = x.transpose()
 indianpines_reduced_pca = np.matmul(x1, indianpines_PCs)
 
 # Model x as a dataframe
-x_pca_df = pd.DataFrame(data = indianpines_reduced_pca,
+pines_pca_df = pd.DataFrame(data = indianpines_reduced_pca,
                         columns = ['PC-1', 'PC-2', 'PC-3', 'PC-4', 'PC-5', 'PC-6', 'PC-7', 'PC-8', 'PC-9', 'PC-10'])
 
 # Adding labels
-X_pca_df = pd.concat([x_pca_df, gt], axis = 1)
+pines_pca_df = pd.concat([pines_pca_df, gt], axis = 1)
 
 fig = plt.figure(figsize = (10,10))
 ax = fig.add_subplot(1,1,1)
@@ -137,30 +137,44 @@ class_num = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 colors = ['r','g','b','y','m','c','k','r','g','b','y','m','c','k','b','r']
 markerm = ['o','o','o','o','o','o','o','+','+','+','+','+','+','+','*','*']
 for target, color, m in zip(class_num,colors,markerm):
-    indicesToKeep = X_pca_df['gth'] == target
-    ax.scatter(X_pca_df.loc[indicesToKeep, 'PC-1'],
-                X_pca_df.loc[indicesToKeep, 'PC-2'],
+    indicesToKeep = pines_pca_df['gth'] == target
+    ax.scatter(pines_pca_df.loc[indicesToKeep, 'PC-1'],
+                pines_pca_df.loc[indicesToKeep, 'PC-2'],
                 c = color, marker = m, s = 9)
 ax.legend(class_num)
 ax.grid()
 plt.savefig('pca-indianpines.png')
 
-exit()
-
 # Part iii
 
-# There are 3 classes, LDA is N-1 for separation of each class
-lda = LinearDiscriminantAnalysis(n_components=2)
-X_r2 = lda.fit(X, y).transform(X)
+## Iris LDA
 
-# Visualization time
+### There are 3 classes, LDA is N-1 for separation of each class
+lda = LinearDiscriminantAnalysis(n_components=2)
+iris_reduced_lda = lda.fit(X, y).transform(X)
+
+### Visualization time
 plt.figure()
 colors = ['navy', 'turquoise', 'darkorange']
 lw = 2
 
 for color, i, target_name in zip(colors, [0,1,2], target_names):
-    plt.scatter(X_r2[y == i, 0], X_r2[y == i, 1], color=color, alpha=0.8, lw=lw, label=target_name)
+    plt.scatter(iris_reduced_lda[y == i, 0], iris_reduced_lda[y == i, 1], color=color, alpha=0.8, lw=lw, label=target_name)
 plt.legend(loc='best', shadow=False, scatterpoints=1)
-plt.title('LDA of IRIS dataset')
+plt.title('LDA of Iris dataset')
 
-plt.savefig('iris-lda.png')
+plt.savefig('lda-iris.png')
+
+## Indian Pines LDA
+lda = LinearDiscriminantAnalysis(n_components=15) # N-1 separations for N classes
+indianpines_reduced_lda = lda.fit(x,gth).transform(x)
+
+colors = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow', 'black', 'white',
+          'gray', 'orange', 'purple', 'brown', 'pink', 'teal', 'turquoise', 'darkorange']
+lw = 15
+
+for color, i, target_name in zip(colors, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], gt):
+    plt.scatter(indianpines_reduced_lda[y == i, 0], indianpines_reduced_lda[y == i, 1], color=color, alpha=0.8, lw=lw, label=target_name)
+plt.legend(loc='best', shadow=False, scatterpoints=1)
+plt.title('LDA of Iris dataset')
+plt.savefig('lda-pines.png')
