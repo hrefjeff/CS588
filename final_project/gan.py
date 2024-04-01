@@ -49,9 +49,6 @@ def main():
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(df)
 
-    print(scaled_features)
-    exit()
-
     # Convert to pytorch tensors
     tensor_data = torch.tensor(scaled_features, dtype=torch.float)
 
