@@ -10,11 +10,6 @@ import matplotlib.pyplot as plt
 
 # Load dataset
 df = pd.read_csv('s1/e1/u2/test-acc.txt', delimiter=';')
-cor_eff = df.corr(numeric_only=True)
-plt.figure(figsize = (6,6))
-sns.heatmap(cor_eff, linecolor='white', linewidths=1, annot=True)
-plt.savefig("corr_heatmap.png", bbox_inches="tight")
-exit()
 unmodified_df = pd.read_csv('s1/e1/u2/test-acc.txt', delimiter=';')
 
 # Drop the time index as it's not a feature
